@@ -1,4 +1,4 @@
-view: cc_fraud {
+view: cc_fraud_dataset {
   sql_table_name: rob.cc_fraud ;;
 
   dimension: amount {
