@@ -1,7 +1,6 @@
 view: cc_fraud_dataset {
   sql_table_name: rob.cc_fraud_dataset ;;
 
-
   dimension: name_dest {
     group_label: "Transaction Information"
     label: "Destination ID"
@@ -10,6 +9,7 @@ view: cc_fraud_dataset {
   }
 
   dimension: name_orig {
+    primary_key: yes
     group_label: "Transaction Information"
     label: "Origin ID"
     type: string
@@ -24,12 +24,20 @@ view: cc_fraud_dataset {
   }
 
   dimension: amount {
-    group_label: "Transaction Information"
-    label: "Transaction Amount ($)"
+   hidden: yes
     type: number
     sql: ${TABLE}.amount ;;
     value_format_name: usd
   }
+
+  measure: total_amount {
+    group_label: "Transaction Information"
+    label: "Transaction Amount ($)"
+    type: sum
+    value_format_name: usd
+    sql: ${amount} ;;
+  }
+
 
   dimension: oldbalance_org {
     group_label: "Balance Information"
@@ -65,8 +73,8 @@ view: cc_fraud_dataset {
     group_label: "Fraud Validation"
     label: "Flagged as Fraud"
     type: string
-    sql: CASE WHEN ${TABLE}.isFlaggedFraud = 1 THEN 'YES'
-         ELSE 'NO' END;;
+    sql: CASE WHEN ${TABLE}.isFlaggedFraud = 1 THEN 'Yes'
+         ELSE 'No' END;;
   }
 
   dimension: is_fraud {
@@ -74,9 +82,36 @@ view: cc_fraud_dataset {
     label: "Is Fraud"
     group_label: "Fraud Validation"
     type: string
-    sql: CASE WHEN ${TABLE}.isFraud = 1 THEN 'YES'
-         ELSE 'NO' END;;
+    sql: CASE WHEN ${TABLE}.isFraud = 1 THEN 'Yes'
+         ELSE 'No' END;;
   }
+
+  measure: algorithm_success_rate {
+    description: "% of Fraud That Was Flagged"
+    type: number
+    sql:1.0 * sum(${TABLE}.isFlaggedFraud) / sum(${TABLE}.isFraud) ;;
+    value_format_name: percent_0
+  }
+
+    measure: fraud_count {
+    type: number
+    value_format_name: percent_2
+    sql: 1.0 * sum(${TABLE}.isFraud)/${count} ;;
+  }
+
+  measure: count_percent_of_total_fraud {
+    label: "Percent of Total Fraud"
+    type: percent_of_total
+    sql: ${fraud_count} ;;
+  }
+
+#   dimension: item_gross_margin_percentage_tier {
+#     type: tier
+#     sql: 100*${item_gross_margin_percentage} ;;
+#     tiers: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+#     style: interval
+#   }
+
 
   dimension: location_origin {
     group_label: "Location Information"
@@ -100,6 +135,28 @@ view: cc_fraud_dataset {
     end_location_field: location_destination
     units: miles
   }
+
+  dimension: city {
+    group_label: "Location Information"
+    label: "Origin City"
+    type: string
+    sql: ${TABLE}.city ;;
+  }
+
+  dimension: state {
+    group_label: "Location Information"
+    label: "Origin State"
+    type: string
+    sql: ${TABLE}.state ;;
+  }
+
+  dimension: county {
+    group_label: "Location Information"
+    label: "Origin County"
+    type: string
+    sql: ${TABLE}.county ;;
+  }
+
 #
 #   dimension: location_filter {
 #     type: yesno
@@ -131,6 +188,8 @@ view: cc_fraud_dataset {
     sql: ${TABLE}.destlong ;;
   }
 
+
+
   measure: average_distance {
     type: average
     sql: ${distance_between_origin_and_destination};;
@@ -139,7 +198,8 @@ view: cc_fraud_dataset {
     drill_fields: [name_orig, name_dest, distance_between_origin_and_destination]
   }
 
-  measure: count {
+  measure: count{
+    label: "Total Transactions"
     type: count
     drill_fields: [distance_between_origin_and_destination]
   }

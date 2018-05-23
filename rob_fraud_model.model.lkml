@@ -6,9 +6,9 @@ include: "*.dashboard.lookml"  # include all dashboards in this project
 explore: cc_fraud_dataset {
   label: "Credit Card Fraud"
 
-join: cc_fraud_locations {
+ join: cc_fraud_locations {
   relationship: one_to_many
-  sql: ${cc_fraud_dataset.name_orig} =${cc_fraud_locations.name_orig};;
+  sql_on: ${cc_fraud_dataset.name_orig} = ${cc_fraud_locations.name_orig};;
   }
 }
 

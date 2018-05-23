@@ -2,6 +2,7 @@ view: cc_fraud_locations {
   sql_table_name: rob.cc_fraud_locations ;;
 
   dimension: name_orig {
+    primary_key: yes
     hidden: yes
     type: string
     sql: ${TABLE}.nameOrig ;;
@@ -27,8 +28,8 @@ view: cc_fraud_locations {
 
   dimension: location {
     type: location
-    sql_latitude: ${lat} ;;
-    sql_longitude: ${long} ;;
+    sql_latitude: round(${lat},1) ;;
+    sql_longitude: round(${long},1) ;;
   }
 
 
