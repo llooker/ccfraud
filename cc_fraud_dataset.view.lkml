@@ -1,5 +1,5 @@
 view: cc_fraud_dataset {
-  sql_table_name: rob.cc_fraud ;;
+  sql_table_name: rob.cc_fraud_dataset ;;
 
 
   dimension: name_dest {
@@ -110,13 +110,13 @@ view: cc_fraud_dataset {
   dimension: origlat {
    hidden: yes
     type: number
-    sql: ${TABLE}.origlat + .1  ;;
+    sql: ${TABLE}.origlat +.1 ;;
   }
 
   dimension: origlong {
     hidden: yes
     type: number
-    sql: ${TABLE}.origlong  + .1 ;;
+    sql: ${TABLE}.origlong +.1;;
   }
 
   dimension: destlat {
