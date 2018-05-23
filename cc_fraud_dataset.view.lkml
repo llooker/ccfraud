@@ -1,4 +1,5 @@
 view: cc_fraud_dataset {
+  label: "Fraud Data"
   sql_table_name: rob.cc_fraud_dataset ;;
 
   dimension: name_dest {
@@ -6,6 +7,7 @@ view: cc_fraud_dataset {
     label: "Destination ID"
     type: string
     sql: ${TABLE}.nameDest ;;
+    drill_fields: [detail*]
   }
 
   dimension: name_orig {
@@ -14,6 +16,7 @@ view: cc_fraud_dataset {
     label: "Origin ID"
     type: string
     sql: ${TABLE}.nameOrig ;;
+    drill_fields: [detail*]
   }
 
   dimension: type {
@@ -21,12 +24,19 @@ view: cc_fraud_dataset {
     label: "Transaction Type"
     type: string
     sql: ${TABLE}.type ;;
+    link: {
+      label: "{{value}} Detail Dashboard"
+      url: "/dashboards/261?Transaction%20Type={{ value | encode_uri }}"
+      icon_url: "http://www.looker.com/favicon.ico"
+    }
+    drill_fields: [detail*]
   }
 
   dimension: amount {
    hidden: yes
     type: number
     sql: ${TABLE}.amount ;;
+    drill_fields: [detail*]
     value_format_name: usd
   }
 
@@ -36,6 +46,7 @@ view: cc_fraud_dataset {
     type: sum
     value_format_name: usd
     sql: ${amount} ;;
+    drill_fields: [detail*]
   }
 
 
@@ -44,6 +55,7 @@ view: cc_fraud_dataset {
     label: "Origin Old Balance"
     type: number
     sql: ${TABLE}.oldbalanceOrg ;;
+    drill_fields: [detail*]
   }
 
   dimension: newbalance_orig {
@@ -51,6 +63,7 @@ view: cc_fraud_dataset {
     label: "Origin New Balance"
     type: number
     sql: ${TABLE}.newbalanceOrig ;;
+    drill_fields: [detail*]
   }
 
   dimension: oldbalance_dest {
@@ -58,6 +71,7 @@ view: cc_fraud_dataset {
     label: "Destination Old Balance"
     type: number
     sql: ${TABLE}.oldbalanceDest ;;
+    drill_fields: [detail*]
   }
 
   dimension: newbalance_dest {
@@ -65,6 +79,7 @@ view: cc_fraud_dataset {
     label: "Destination New Balance"
     type: number
     sql: ${TABLE}.newbalanceDest ;;
+    drill_fields: [detail*]
   }
 
 
@@ -75,6 +90,7 @@ view: cc_fraud_dataset {
     type: string
     sql: CASE WHEN ${TABLE}.isFlaggedFraud = 1 THEN 'Yes'
          ELSE 'No' END;;
+    drill_fields: [detail*]
   }
 
   dimension: is_fraud {
@@ -84,6 +100,7 @@ view: cc_fraud_dataset {
     type: string
     sql: CASE WHEN ${TABLE}.isFraud = 1 THEN 'Yes'
          ELSE 'No' END;;
+    drill_fields: [detail*]
   }
 
   measure: algorithm_success_rate {
@@ -91,26 +108,53 @@ view: cc_fraud_dataset {
     type: number
     sql:1.0 * sum(${TABLE}.isFlaggedFraud) / sum(${TABLE}.isFraud) ;;
     value_format_name: percent_0
+#     filters: {
+#       field: cc_fraud_dataset.is_flagged_fraud
+#       value: "No"
+#     }
+    drill_fields: [detail*]
   }
 
     measure: fraud_count {
-    type: number
-    value_format_name: percent_2
-    sql: 1.0 * sum(${TABLE}.isFraud)/${count} ;;
+    type: count_distinct
+    sql: 1.0 * sum(${TABLE}.isFraud) ;;
+      filters: {
+        field: cc_fraud_dataset.is_fraud
+        value: "Yes"
+      }
+      drill_fields: [detail*]
   }
+
+  measure: flagged_fraud_count {
+    type: count_distinct
+    sql: 1.0 * sum(${TABLE}.isFlaggedFraud) ;;
+    filters: {
+      field: cc_fraud_dataset.is_flagged_fraud
+      value: "Yes"
+    }
+    drill_fields: [detail*]
+    }
+
 
   measure: count_percent_of_total_fraud {
     label: "Percent of Total Fraud"
     type: percent_of_total
     sql: ${fraud_count} ;;
+#     filters: {
+#       field: cc_fraud_dataset.is_fraud
+#       value: "Yes"
+#     }
+    drill_fields: [detail*]
   }
 
-#   dimension: item_gross_margin_percentage_tier {
-#     type: tier
-#     sql: 100*${item_gross_margin_percentage} ;;
-#     tiers: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
-#     style: interval
-#   }
+  dimension: transaction_amount_tier {
+    group_label: "Transaction Information"
+    type: tier
+    sql: ${amount} ;;
+    tiers: [10000, 50000, 100000, 1000000]
+    style: integer
+    drill_fields: [detail*]
+  }
 
 
   dimension: location_origin {
@@ -118,6 +162,8 @@ view: cc_fraud_dataset {
     type: location
     sql_latitude: round(${origlat},1) ;;
     sql_longitude: round(${origlong},1) ;;
+    drill_fields: [name_orig, type, is_fraud, is_flagged_fraud,location_origin,location_destination, total_amount]
+
   }
 
   dimension: location_destination {
@@ -125,11 +171,14 @@ view: cc_fraud_dataset {
     type: location
     sql_latitude: round(${destlat},1) ;;
     sql_longitude: round(${destlong},1) ;;
+    drill_fields: [name_orig, type, is_fraud, is_flagged_fraud,location_origin,location_destination, total_amount]
+
   }
 
   dimension: distance_between_origin_and_destination {
     group_label: "Location Information"
     label: "Distance in Miles"
+    drill_fields: [name_orig, type, is_fraud, is_flagged_fraud,location_origin,location_destination, total_amount]
     type: distance
     start_location_field: location_origin
     end_location_field: location_destination
@@ -141,6 +190,7 @@ view: cc_fraud_dataset {
     label: "Origin City"
     type: string
     sql: ${TABLE}.city ;;
+    drill_fields: [detail*]
   }
 
   dimension: state {
@@ -148,6 +198,12 @@ view: cc_fraud_dataset {
     label: "Origin State"
     type: string
     sql: ${TABLE}.state ;;
+    link: {
+      label: "{{value}} Detail Dashboard"
+      url: "/dashboards/261?Origin%20State={{ value | encode_uri }}"
+      icon_url: "http://www.looker.com/favicon.ico"
+    }
+    drill_fields: [detail*]
   }
 
   dimension: county {
@@ -155,6 +211,7 @@ view: cc_fraud_dataset {
     label: "Origin County"
     type: string
     sql: ${TABLE}.county ;;
+    drill_fields: [detail*]
   }
 
 #
@@ -186,6 +243,7 @@ view: cc_fraud_dataset {
     hidden: yes
     type: number
     sql: ${TABLE}.destlong ;;
+
   }
 
 
@@ -195,12 +253,17 @@ view: cc_fraud_dataset {
     sql: ${distance_between_origin_and_destination};;
     value_format: "0.00\" mi\""
     #value_format_name: decimal_2
-    drill_fields: [name_orig, name_dest, distance_between_origin_and_destination]
+    drill_fields: [detail*]
   }
 
   measure: count{
     label: "Total Transactions"
     type: count
-    drill_fields: [distance_between_origin_and_destination]
+    drill_fields: [detail*]
   }
+
+set: detail {
+  fields: [name_orig, type, is_fraud, is_flagged_fraud, city, state, total_amount]
+}
+
 }

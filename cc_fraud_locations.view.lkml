@@ -1,4 +1,5 @@
 view: cc_fraud_locations {
+  label: "Locations"
   sql_table_name: rob.cc_fraud_locations ;;
 
   dimension: name_orig {
