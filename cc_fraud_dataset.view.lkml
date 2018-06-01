@@ -116,8 +116,7 @@ view: cc_fraud_dataset {
   }
 
     measure: fraud_count {
-    type: count_distinct
-    sql: 1.0 * sum(${TABLE}.isFraud) ;;
+    type: count
       filters: {
         field: cc_fraud_dataset.is_fraud
         value: "Yes"
@@ -126,8 +125,7 @@ view: cc_fraud_dataset {
   }
 
   measure: flagged_fraud_count {
-    type: count_distinct
-    sql: 1.0 * sum(${TABLE}.isFlaggedFraud) ;;
+    type: count
     filters: {
       field: cc_fraud_dataset.is_flagged_fraud
       value: "Yes"
