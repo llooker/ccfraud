@@ -1,7 +1,7 @@
 connection: "bigquery"
 
 include: "*.view.lkml"         # include all views in this project
-include: "*.dashboard.lookml"  # include all dashboards in this project
+#include: "*.dashboard.lookml"  # include all dashboards in this project
 
 explore: cc_fraud_dataset {
   label: "Credit Card Fraud"
