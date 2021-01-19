@@ -15,7 +15,7 @@ const visObject = {
       default: 42
     }
   },
- 
+
  /**
   * The create function gets called when the visualization is mounted but before any
   * data is passed to it.
@@ -40,7 +40,7 @@ const visObject = {
       font-size: 11px;
       fill: #9B9B9B;
     }
-  
+
       </style>`;
   },
 
@@ -63,7 +63,13 @@ var arc = d3.svg.arc()
     .innerRadius(52)
     .outerRadius(66);
 
-   
+const datumField = queryResponse.fields.measure_like[0]
+const datum = data[0][datumField.name]
+let value = datum.value
+const compareField = queryResponse.fields.measure_like[1]
+const compareDatum = data[0][compareField.name]
+let compareValue = compareDatum.value
+
 var svg = d3.select("#vis").append("svg")
     .attr("width", width)
     .attr("height", height)
@@ -92,7 +98,7 @@ var description = meter.append("text")
     .attr("dy", "2.3em")
     .text("Total Complete");
 
-var i = d3.interpolate(progress, allocated / total);
+var i = d3.interpolate(progress, value / compareValue);
 
  d3.transition().duration(1000).tween("progress", function() {
   return function(t) {
