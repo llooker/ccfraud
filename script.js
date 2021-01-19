@@ -5,12 +5,12 @@ const visObject = {
   **/
   options: {
     first_option: {
-        type: "string",
+      type: "string",
       label: "My First Option",
       default: "Default Value"
     },
     second_option: {
-        type: "number",
+      type: "number",
       label: "My Second Option",
       default: 42
     }
@@ -20,8 +20,8 @@ const visObject = {
   * The create function gets called when the visualization is mounted but before any
   * data is passed to it.
   **/
-    create: function(element, config){
-        element.innerHTML = `<style>
+  create: function(element, config){
+    element.innerHTML = `<style>
       .funds-allocated-meter .background{
     fill: #E6E7E8;
   }
@@ -42,13 +42,13 @@ const visObject = {
     }
   
       </style>`;
-    },
+  },
 
  /**
   * UpdateAsync is the function that gets called (potentially) multiple times. It receives
   * the data and should update the visualization with the new data.
   **/
-    updateAsync: function(data, element, config, queryResponse, details, doneRendering){
+  updateAsync: function(data, element, config, queryResponse, details, doneRendering){
     // set the dimensions and margins of the graph
     var width = 135,
     height = 135,
@@ -57,13 +57,7 @@ const visObject = {
     allocated = 2000000,
     total = 4300000,
     formatPercent = d3.format(".0%");
-const datumField = queryResponse.fields.measure_like[0]
-const datum = data[0][datumField.name]
-let value = datum.value
-const compareField = queryResponse.fields.measure_like[1]
-const compareDatum = data[0][compareField.name]
-let compareValue = compareDatum.value
-console.log(value);
+
 var arc = d3.svg.arc()
     .startAngle(0)
     .innerRadius(52)
@@ -75,62 +69,7 @@ var svg = d3.select("#vis").append("svg")
     .attr("height", height)
   .append("g")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
-    ;
-
-var meter = svg.append("g")
-    .attr("class", "funds-allocated-meter");
-
-meter.append("path")
-    .attr("class", "background")
-    .attr("d", arc.endAngle(twoPi));
-
-var foreground = meter.append("path")
-    .attr("class", "foreground");
-
-var percentComplete = meter.append("text")
-    .attr("text-anchor", "middle")
-    .attr("class", "percent-complete")
-    .attr("dy", "0em");
-
-var description = meter.append("text")
-    .attr("text-anchor", "middle")
-    .attr("class", "description")
-    .attr("dy", "2.3em")
-    .text("Total Complete");
-
-var i = d3.interpolate(progress, value / compareValue);
-
- d3.transition().duration(1000).tween("progress", function() {
-  return function(t) {
-    progress = i(t);
-    foreground.attr("d", arc.endAngle(twoPi * progress));
-    percentComplete.text(formatPercent(progress));
-  };
-});
-        doneRendering()
-    }
-};
-
-looker.plugins.visualizations.add(visObject);
-
-var width = 135,
-    height = 135,
-    twoPi = 2 * Math.PI,
-    progress = 0,
-    allocated = 2000000,
-    total = 4300000,
-    formatPercent = d3.format(".0%");
-
-var arc = d3.svg.arc()
-    .startAngle(0)
-    .innerRadius(52)
-    .outerRadius(66);
-
-var svg = d3.select("#docsChart").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-  .append("g")
-    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+  ;
 
 var meter = svg.append("g")
     .attr("class", "funds-allocated-meter");
@@ -158,7 +97,12 @@ var i = d3.interpolate(progress, allocated / total);
  d3.transition().duration(1000).tween("progress", function() {
   return function(t) {
     progress = i(t);
-    foreground.attr("d", arc.endAngle(twoPi *-progress));
+    foreground.attr("d", arc.endAngle(twoPi * progress));
     percentComplete.text(formatPercent(progress));
   };
 });
+    doneRendering()
+  }
+};
+
+looker.plugins.visualizations.add(visObject);
