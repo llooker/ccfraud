@@ -1,3 +1,10 @@
+/**
+ * Welcome to the Looker Visualization Builder! Please refer to the following resources
+ * to help you write your visualization:
+ *  - API Documentation - https://github.com/looker/custom_visualizations_v2/blob/master/docs/api_reference.md
+ *  - Example Visualizations - https://github.com/looker/custom_visualizations_v2/tree/master/src/examples
+ **/
+
 const visObject = {
  /**
   * Configuration options for your visualization. In Looker, these show up in the vis editor
@@ -5,9 +12,9 @@ const visObject = {
   **/
   options: {
     first_option: {
-      type: "string",
+      type: "number",
       label: "My First Option",
-      default: "Default Value"
+      default: 10
     },
     second_option: {
       type: "number",
@@ -21,27 +28,7 @@ const visObject = {
   * data is passed to it.
   **/
   create: function(element, config){
-    element.innerHTML = `<style>
-      .funds-allocated-meter .background{
-    fill: #E6E7E8;
-  }
-  .funds-allocated-meter .foreground {
-    fill: #00D2B6;
-  }
-  text .percent-complete {
-     {
-      font-family: 'Roboto Condensed', sans-serif;
-      font-size: 40px;
-      fill: #5B8BE3;
-      letter-spacing: -.03em;
-    }
-    text .description {
-      font-family: 'Source Sans Pro', sans-serif;
-      font-size: 11px;
-      fill: #9B9B9B;
-    }
-
-      </style>`;
+    element.innerHTML =  "<h1>Ready to render!</h1>";
   },
 
  /**
@@ -62,6 +49,28 @@ var arc = d3.svg.arc()
     .startAngle(0)
     .innerRadius(52)
     .outerRadius(66);
+
+element.innerHTML = `<style>
+      .funds-allocated-meter .background{
+    fill: #E6E7E8;
+  }
+  .funds-allocated-meter .foreground {
+    fill: #00D2B6;
+  }
+  text .percent-complete {
+     {
+      font-family: 'Roboto Condensed', sans-serif;
+      font-size: 40px;
+      fill: #5B8BE3;
+      letter-spacing: -.03em;
+    }
+    text .description {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-size: 11px;
+      fill: #9B9B9B;
+    }
+
+      </style>`
 
 const datumField = queryResponse.fields.measure_like[0]
 const datum = data[0][datumField.name]
